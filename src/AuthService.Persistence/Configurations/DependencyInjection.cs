@@ -1,4 +1,5 @@
-﻿using AuthService.Application.Abstractions.Data;
+﻿using AuthService.Application.Abstractions.Auth;
+using AuthService.Application.Abstractions.Data;
 using AuthService.Persistence.Interceptors;
 using AuthService.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
