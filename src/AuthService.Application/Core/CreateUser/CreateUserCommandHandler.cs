@@ -14,6 +14,9 @@ namespace AuthService.Application.Core.CreateUser
     {
         public async Task Handle(CreateUserCommand request)
         {
+            var existingUser = await userRepository.GetByEmail(request.Email);
+            if (existingUser is not null) throw new ArgumentException();
+
             var user = mapper.MapToUser(request);
             user.PasswordHash = passwordHasher.Hash(request.Password);
 

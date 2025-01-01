@@ -1,5 +1,5 @@
-﻿using AuthService.Application.Abstractions.Auth;
-using AuthService.Application.Abstractions.Data;
+﻿using AuthService.Application.Abstractions.Data;
+using AuthService.Domain.Entities;
 using AuthService.Persistence.Interceptors;
 using AuthService.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +25,7 @@ namespace AuthService.Persistence.Configurations
 
             services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<AuthDbContext>());
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
             return services;
         }

@@ -7,6 +7,16 @@ namespace AuthService.Persistence
     public class AuthDbContext : DbContext, IUnitOfWork
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+        public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options)
+        {
+            Database.EnsureCreated();
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+        }
 
         public async Task BeginTransaction()
         {
