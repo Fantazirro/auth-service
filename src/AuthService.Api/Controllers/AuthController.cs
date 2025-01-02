@@ -1,4 +1,5 @@
-﻿using AuthService.Application.Abstractions.Auth;
+﻿using AuthService.Api.Filters;
+using AuthService.Application.Abstractions.Auth;
 using AuthService.Application.Core.CreateRefreshToken;
 using AuthService.Application.Core.CreateUser;
 using AuthService.Application.Core.SignIn;
@@ -12,6 +13,7 @@ namespace AuthService.Api.Controllers
     public class AuthController : ControllerBase
     {
         [HttpPost("sign-up")]
+        [ValidationFilter<CreateUserCommand>]
         public async Task<IActionResult> SignUp(
             [FromQuery] CreateUserCommand request,
             [FromServices] CreateUserCommandHandler createUser)
@@ -21,18 +23,20 @@ namespace AuthService.Api.Controllers
         }
 
         [HttpPost("sign-in")]
+        [ValidationFilter<SignInQuery>]
         public async Task<IActionResult> SignIn(
             [FromQuery] SignInQuery request,
             [FromServices] SignInQueryHandler signInHandler,
             [FromServices] CreateRefreshTokenCommandHandler createRefreshTokenHandler,
             [FromServices] IJwtProvider jwtProvider,
-            [FromServices] IHttpContextAccessor httpContextAccessor)
+            [FromServices] IHttpContextAccessor httpContextAccessor,
+            [FromServices] IConfiguration configuration)
         {
             var user = await signInHandler.Handle(request);
 
             var accessToken = jwtProvider.GenerateToken(user);
 
-            var createRefreshTokenCommand = new CreateRefreshTokenCommand(user.Id);
+            var createRefreshTokenCommand = new CreateRefreshTokenCommand(user.Id, configuration.GetValue<int>("RefreshTokenExpirationTimeInMonth"));
             var refreshToken = await createRefreshTokenHandler.Handle(createRefreshTokenCommand);
 
             httpContextAccessor.HttpContext?.Response.Cookies.Append("refresh_token", refreshToken.ToString(),
@@ -45,7 +49,7 @@ namespace AuthService.Api.Controllers
         }
 
         [HttpPost("sign-out")]
-        public async Task<IActionResult> SignOut()
+        public new async Task<IActionResult> SignOut()
         {
             throw new NotImplementedException();
         }

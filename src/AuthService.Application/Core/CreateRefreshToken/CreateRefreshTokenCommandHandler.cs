@@ -14,7 +14,7 @@ namespace AuthService.Application.Core.CreateRefreshToken
             {
                 Id = Guid.NewGuid(),
                 UserId = request.UserId,
-                ExpiredAtUtc = DateTime.UtcNow.AddMonths(6)
+                ExpiredAtUtc = DateTimeOffset.UtcNow.AddMonths(request.ExpirationTimeInMonths)
             };
 
             await refreshTokenRepository.Add(token);

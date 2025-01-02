@@ -1,4 +1,5 @@
 ﻿using AuthService.Application.Abstractions.Common;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -10,8 +11,10 @@ namespace AuthService.Application.Configurations
         {
             services.AddScoped<Mapper>();
 
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly(), includeInternalTypes: true);
+
             var useCases = Assembly.GetExecutingAssembly().GetTypes()
-                .Where(t => t.GetInterface(typeof(IRequestHandler<,>).Name) is not null);
+                .Where(type => type.GetInterface(typeof(IRequestHandler<,>).Name) is not null);
 
             foreach (var useCase in useCases)
                 services.AddScoped(useCase);

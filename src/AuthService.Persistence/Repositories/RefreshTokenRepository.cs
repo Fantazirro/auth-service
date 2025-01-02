@@ -10,7 +10,7 @@ namespace AuthService.Persistence.Repositories
 
         public new async Task<RefreshToken?> GetById(Guid id)
         {
-            return await _dbContext.RefreshTokens.Include(t => t.User).FirstAsync(t => t.Id == id);
+            return await _dbContext.RefreshTokens.Include(token => token.User).FirstAsync(token => token.Id == id);
         }
     }
 }

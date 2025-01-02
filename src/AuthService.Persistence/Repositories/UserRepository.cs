@@ -10,7 +10,7 @@ namespace AuthService.Persistence.Repositories
 
         public async Task<User?> GetByEmail(string email)
         {
-            return await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return await _dbContext.Users.FirstOrDefaultAsync(user => user.Email == email);
         }
     }
 }

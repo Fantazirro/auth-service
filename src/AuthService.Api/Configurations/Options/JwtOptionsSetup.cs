@@ -1,4 +1,4 @@
-﻿using AuthService.Infrastructure.Auth;
+﻿using AuthService.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 
 namespace AuthService.Api.Configurations.Options

@@ -25,14 +25,14 @@ namespace AuthService.Persistence.Interceptors
             {
                 if (entry.State == EntityState.Added)
                 {
-                    entry.Property(a => a.CreatedBy).CurrentValue = ModifiedBy;
-                    entry.Property(a => a.CreatedOnUtc).CurrentValue = DateTimeOffset.UtcNow;
+                    entry.Property(entity => entity.CreatedBy).CurrentValue = ModifiedBy;
+                    entry.Property(entity => entity.CreatedOnUtc).CurrentValue = DateTimeOffset.UtcNow;
                 }
 
                 if (entry.State == EntityState.Modified)
                 {
-                    entry.Property(a => a.LastModifiedBy).CurrentValue = ModifiedBy;
-                    entry.Property(a => a.LastModifiedOnUtc).CurrentValue = DateTimeOffset.UtcNow;
+                    entry.Property(entity => entity.LastModifiedBy).CurrentValue = ModifiedBy;
+                    entry.Property(entity => entity.LastModifiedOnUtc).CurrentValue = DateTimeOffset.UtcNow;
                 }
             }
 
