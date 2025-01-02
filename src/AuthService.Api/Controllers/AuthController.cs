@@ -36,7 +36,11 @@ namespace AuthService.Api.Controllers
 
             var accessToken = jwtProvider.GenerateToken(user);
 
-            var createRefreshTokenCommand = new CreateRefreshTokenCommand(user.Id, configuration.GetValue<int>("RefreshTokenExpirationTimeInMonth"));
+            var createRefreshTokenCommand = new CreateRefreshTokenCommand(
+                user.Id, 
+                configuration
+                    .GetRequiredSection("RefreshTokenOptions")
+                    .GetValue<int>("ExpirationTimeInMonth"));
             var refreshToken = await createRefreshTokenHandler.Handle(createRefreshTokenCommand);
 
             httpContextAccessor.HttpContext?.Response.Cookies.Append("refresh_token", refreshToken.ToString(),

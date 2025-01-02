@@ -1,12 +1,12 @@
-using AuthService.Api.Configurations.Options;
+using AuthService.Api.Extensions;
+using AuthService.Api.Middleware;
 using AuthService.Application.Configurations;
 using AuthService.Infrastructure.Configurations;
 using AuthService.Persistence.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.ConfigureOptions<JwtOptionsSetup>();
-builder.Services.ConfigureOptions<UserOptionsSetup>();
+builder.Services.ConfigureOptions();
 
 builder.Services.ConfigureApplicationServices();
 builder.Services.ConfigurePersistenceServices();
@@ -18,6 +18,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddExceptionHandler<ExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -26,6 +29,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler();
 app.MapControllers();
 
 app.Run();
