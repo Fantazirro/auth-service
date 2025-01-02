@@ -1,9 +1,12 @@
 ﻿using AuthService.Api.Filters;
 using AuthService.Application.Abstractions.Auth;
+using AuthService.Application.Abstractions.Common;
 using AuthService.Application.Core.CreateRefreshToken;
 using AuthService.Application.Core.CreateUser;
+using AuthService.Application.Core.DeleteRefreshToken;
 using AuthService.Application.Core.SignIn;
 using AuthService.Application.Core.VerifyRefreshToken;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthService.Api.Controllers
@@ -53,9 +56,28 @@ namespace AuthService.Api.Controllers
         }
 
         [HttpPost("sign-out")]
-        public new async Task<IActionResult> SignOut()
+        public async Task<IActionResult> SignOut(
+            [FromServices] DeleteRefreshTokenCommandHandler deleteRefreshTokenHandler,
+            [FromServices] HttpContextAccessor httpContextAccessor,
+            [FromServices] ICacheService cacheService,
+            [FromServices] IUserIdentifierProvider userIdentifierProvider,
+            [FromServices] IConfiguration configuration)
         {
-            throw new NotImplementedException();
+            var hasRefreshToken = httpContextAccessor.HttpContext!.Request.Cookies.TryGetValue("refresh_token", out string? refreshTokenId);
+            if (!hasRefreshToken) return BadRequest();
+
+            var command = new DeleteRefreshTokenCommand(Guid.Parse(refreshTokenId!));
+            await deleteRefreshTokenHandler.Handle(command);
+
+            var accessToken = httpContextAccessor.HttpContext.Request.Headers.Authorization;
+            var lifeTimeInMinutes = configuration.GetSection("JwtOptions").GetValue<int>("DurationInMinutes");
+
+            await cacheService.SetAsync(
+                $"accessBlacklist_{userIdentifierProvider.UserId}_{Guid.NewGuid()}",
+                accessToken,
+                TimeSpan.FromMinutes(lifeTimeInMinutes));
+
+            return Ok();
         }
 
         [HttpPost("refresh")]

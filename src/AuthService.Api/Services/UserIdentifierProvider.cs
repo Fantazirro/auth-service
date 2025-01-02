@@ -1,8 +1,7 @@
 ﻿using AuthService.Application.Abstractions.Auth;
-using Microsoft.AspNetCore.Http;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace AuthService.Infrastructure.Auth
+namespace AuthService.Api.Services
 {
     public class UserIdentifierProvider : IUserIdentifierProvider
     {

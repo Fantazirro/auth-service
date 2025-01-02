@@ -1,15 +1,15 @@
 ﻿using AuthService.Application.Abstractions.Data;
-using AuthService.Domain.Entities;
 using AuthService.Persistence.Interceptors;
 using AuthService.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AuthService.Persistence.Configurations
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection ConfigurePersistenceServices(this IServiceCollection services)
+        public static IServiceCollection ConfigurePersistenceServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<AuditInterceptor>();
 
@@ -18,7 +18,7 @@ namespace AuthService.Persistence.Configurations
                 var auditInterceptor = serviceProvider.GetService<AuditInterceptor>()!;
 
                 options
-                    .UseNpgsql("Host=localhost;Port=5432;Database=auth-service;Username=postgres;Password=postgres")
+                    .UseNpgsql(configuration.GetConnectionString(""))
                     .UseSnakeCaseNamingConvention()
                     .AddInterceptors(auditInterceptor);
             });
