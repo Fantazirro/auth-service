@@ -5,7 +5,7 @@ using AuthService.Domain.Exceptions;
 
 namespace AuthService.Application.Core.VerifyRefreshToken
 {
-    public class GetRefreshTokenQueryHandler(IRefreshTokenRepository refreshTokenRepository) : IRequestHandler<GetRefreshTokenQuery, Task<RefreshToken>>
+    public class GetRefreshTokenQueryHandler(IRefreshTokenRepository refreshTokenRepository) : IRequestHandler<GetRefreshTokenQuery, RefreshToken>
     {
         public async Task<RefreshToken> Handle(GetRefreshTokenQuery request)
         {

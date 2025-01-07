@@ -6,7 +6,7 @@ namespace AuthService.Application.Core.CreateRefreshToken
 {
     public class CreateRefreshTokenCommandHandler(
         IRefreshTokenRepository refreshTokenRepository,
-        IUnitOfWork unitOfWork) : IRequestHandler<CreateRefreshTokenCommand, Task<Guid>>
+        IUnitOfWork unitOfWork) : IRequestHandler<CreateRefreshTokenCommand, Guid>
     {
         public async Task<Guid> Handle(CreateRefreshTokenCommand request)
         {

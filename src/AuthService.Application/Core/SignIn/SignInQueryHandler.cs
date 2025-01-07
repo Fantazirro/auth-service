@@ -8,7 +8,7 @@ namespace AuthService.Application.Core.SignIn
 {
     public class SignInQueryHandler(
         IUserRepository userRepository, 
-        IPasswordHasher passwordHasher) : IRequestHandler<SignInQuery, Task<User>>
+        IPasswordHasher passwordHasher) : IRequestHandler<SignInQuery, User>
     {
         public async Task<User> Handle(SignInQuery request)
         {

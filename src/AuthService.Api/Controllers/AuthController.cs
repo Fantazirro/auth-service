@@ -1,6 +1,8 @@
 ﻿using AuthService.Api.Filters;
 using AuthService.Application.Abstractions.Auth;
 using AuthService.Application.Abstractions.Common;
+using AuthService.Application.Abstractions.Notifications;
+using AuthService.Application.Core.ConfirmEmail;
 using AuthService.Application.Core.CreateRefreshToken;
 using AuthService.Application.Core.CreateUser;
 using AuthService.Application.Core.DeleteRefreshToken;
@@ -99,9 +101,12 @@ namespace AuthService.Api.Controllers
         }
 
         [HttpPost("send-code")]
-        public async Task<IActionResult> SendCode()
+        public async Task<IActionResult> SendCode(
+            [FromQuery] ConfirmEmailQuery request,
+            [FromServices] ConfirmEmailQueryHandler confirmEmailHandler)
         {
-            throw new NotImplementedException();
+            await confirmEmailHandler.Handle(request);
+            return Ok();
         }
 
         [HttpPost("confirm-email")]
