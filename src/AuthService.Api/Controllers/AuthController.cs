@@ -1,29 +1,28 @@
 ﻿using AuthService.Api.Filters;
 using AuthService.Application.Abstractions.Auth;
 using AuthService.Application.Abstractions.Common;
-using AuthService.Application.Abstractions.Notifications;
 using AuthService.Application.Core.ConfirmEmail;
 using AuthService.Application.Core.CreateRefreshToken;
 using AuthService.Application.Core.CreateUser;
 using AuthService.Application.Core.DeleteRefreshToken;
+using AuthService.Application.Core.SendCode;
 using AuthService.Application.Core.SignIn;
 using AuthService.Application.Core.VerifyRefreshToken;
-using Microsoft.AspNetCore.Http;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthService.Api.Controllers
 {
     [Route("auth")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController(IMediator mediator) : ControllerBase
     {
         [HttpPost("sign-up")]
         [ValidationFilter<CreateUserCommand>]
         public async Task<IActionResult> SignUp(
-            [FromQuery] CreateUserCommand request,
-            [FromServices] CreateUserCommandHandler createUser)
+            [FromQuery] CreateUserCommand request)
         {
-            await createUser.Handle(request);
+            await mediator.Send(request);
             return Ok();
         }
 
@@ -31,13 +30,11 @@ namespace AuthService.Api.Controllers
         [ValidationFilter<SignInQuery>]
         public async Task<IActionResult> SignIn(
             [FromQuery] SignInQuery request,
-            [FromServices] SignInQueryHandler signInHandler,
-            [FromServices] CreateRefreshTokenCommandHandler createRefreshTokenHandler,
             [FromServices] IJwtProvider jwtProvider,
             [FromServices] IHttpContextAccessor httpContextAccessor,
             [FromServices] IConfiguration configuration)
         {
-            var user = await signInHandler.Handle(request);
+            var user = await mediator.Send(request);
 
             var accessToken = jwtProvider.GenerateToken(user);
 
@@ -46,7 +43,7 @@ namespace AuthService.Api.Controllers
                 configuration
                     .GetRequiredSection("RefreshTokenOptions")
                     .GetValue<int>("ExpirationTimeInMonth"));
-            var refreshToken = await createRefreshTokenHandler.Handle(createRefreshTokenCommand);
+            var refreshToken = await mediator.Send(createRefreshTokenCommand);
 
             httpContextAccessor.HttpContext?.Response.Cookies.Append("refresh_token", refreshToken.ToString(),
                 new CookieOptions()
@@ -59,7 +56,6 @@ namespace AuthService.Api.Controllers
 
         [HttpPost("sign-out")]
         public async Task<IActionResult> SignOut(
-            [FromServices] DeleteRefreshTokenCommandHandler deleteRefreshTokenHandler,
             [FromServices] HttpContextAccessor httpContextAccessor,
             [FromServices] ICacheService cacheService,
             [FromServices] IUserIdentifierProvider userIdentifierProvider,
@@ -69,7 +65,7 @@ namespace AuthService.Api.Controllers
             if (!hasRefreshToken) return BadRequest();
 
             var command = new DeleteRefreshTokenCommand(Guid.Parse(refreshTokenId!));
-            await deleteRefreshTokenHandler.Handle(command);
+            await mediator.Send(command);
 
             var accessToken = httpContextAccessor.HttpContext.Request.Headers.Authorization;
             var lifeTimeInMinutes = configuration.GetSection("JwtOptions").GetValue<int>("DurationInMinutes");
@@ -84,7 +80,6 @@ namespace AuthService.Api.Controllers
 
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshToken(
-            [FromServices] GetRefreshTokenQueryHandler getRefreshTokenHandler,
             [FromServices] IHttpContextAccessor httpContextAccessor,
             [FromServices] IJwtProvider jwtProvider)
         {
@@ -92,7 +87,7 @@ namespace AuthService.Api.Controllers
             if (!hasRefreshToken) return BadRequest();
 
             var query = new GetRefreshTokenQuery(Guid.Parse(refreshTokenId!));
-            var refreshToken = await getRefreshTokenHandler.Handle(query);
+            var refreshToken = await mediator.Send(query);
             if (refreshToken.ExpiredAtUtc < DateTimeOffset.UtcNow) return BadRequest();
 
             var accessToken = jwtProvider.GenerateToken(refreshToken.User);
@@ -102,17 +97,18 @@ namespace AuthService.Api.Controllers
 
         [HttpPost("send-code")]
         public async Task<IActionResult> SendCode(
-            [FromQuery] ConfirmEmailQuery request,
-            [FromServices] ConfirmEmailQueryHandler confirmEmailHandler)
+            [FromQuery] SendCodeCommand request)
         {
-            await confirmEmailHandler.Handle(request);
+            await mediator.Send(request);
             return Ok();
         }
 
         [HttpPost("confirm-email")]
-        public async Task<IActionResult> ConfirmEmail()
+        public async Task<IActionResult> ConfirmEmail(
+            [FromQuery] ConfirmEmailQuery request)
         {
-            throw new NotImplementedException();
+            await mediator.Send(request);
+            return Ok();
         }
 
         [HttpPost("reset-password")]

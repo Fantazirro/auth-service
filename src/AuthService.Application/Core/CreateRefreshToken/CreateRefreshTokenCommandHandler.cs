@@ -1,14 +1,14 @@
-﻿using AuthService.Application.Abstractions.Common;
-using AuthService.Application.Abstractions.Data;
+﻿using AuthService.Application.Abstractions.Data;
+using AuthService.Application.Abstractions.Messaging;
 using AuthService.Domain.Entities;
 
 namespace AuthService.Application.Core.CreateRefreshToken
 {
     public class CreateRefreshTokenCommandHandler(
         IRefreshTokenRepository refreshTokenRepository,
-        IUnitOfWork unitOfWork) : IRequestHandler<CreateRefreshTokenCommand, Guid>
+        IUnitOfWork unitOfWork) : ICommandHandler<CreateRefreshTokenCommand, Guid>
     {
-        public async Task<Guid> Handle(CreateRefreshTokenCommand request)
+        public async Task<Guid> Handle(CreateRefreshTokenCommand request, CancellationToken cancellationToken)
         {
             var token = new RefreshToken()
             {

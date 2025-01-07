@@ -1,6 +1,6 @@
 ﻿using AuthService.Application.Abstractions.Auth;
-using AuthService.Application.Abstractions.Common;
 using AuthService.Application.Abstractions.Data;
+using AuthService.Application.Abstractions.Messaging;
 using AuthService.Application.Configurations;
 using AuthService.Domain.Exceptions;
 
@@ -11,9 +11,9 @@ namespace AuthService.Application.Core.CreateUser
         IUnitOfWork unitOfWork,
         IPasswordHasher passwordHasher,
         Mapper mapper)
-        : IRequestHandler<CreateUserCommand, bool>
+        : ICommandHandler<CreateUserCommand>
     {
-        public async Task<bool> Handle(CreateUserCommand request)
+        public async Task Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
             var existingUser = await userRepository.GetByEmail(request.Email);
             if (existingUser is not null) throw new BadRequestException($"User with email {request.Email} already exists");
@@ -22,9 +22,7 @@ namespace AuthService.Application.Core.CreateUser
             user.PasswordHash = passwordHasher.Hash(request.Password);
 
             await userRepository.Add(user);
-            await unitOfWork.Commit();
-
-            return true;
+            await unitOfWork.Commit();;
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace AuthService.Application.Core.DeleteRefreshToken
+﻿using AuthService.Application.Abstractions.Messaging;
+
+namespace AuthService.Application.Core.DeleteRefreshToken
 {
-    public record DeleteRefreshTokenCommand(Guid Id);
+    public record DeleteRefreshTokenCommand(Guid Id) : ICommand;
 }

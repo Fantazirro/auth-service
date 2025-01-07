@@ -1,5 +1,4 @@
-﻿using AuthService.Application.Abstractions.Common;
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -13,11 +12,16 @@ namespace AuthService.Application.Configurations
 
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly(), includeInternalTypes: true);
 
-            var useCases = Assembly.GetExecutingAssembly().GetTypes()
-                .Where(type => type.GetInterface(typeof(IRequestHandler<,>).Name) is not null);
+            services.AddMediatR(configuration =>
+            {
+                configuration.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            });
 
-            foreach (var useCase in useCases)
-                services.AddScoped(useCase);
+            //var useCases = Assembly.GetExecutingAssembly().GetTypes()
+            //    .Where(type => type.GetInterface(typeof(IRequestHandlerOld<,>).Name) is not null);
+
+            //foreach (var useCase in useCases)
+            //    services.AddScoped(useCase);
 
             return services;
         }

@@ -1,13 +1,14 @@
 ﻿using AuthService.Application.Abstractions.Common;
+using AuthService.Application.Abstractions.Messaging;
 using AuthService.Application.Abstractions.Notifications;
 using AuthService.Application.Models;
 using AuthService.Domain.Entities;
 
 namespace AuthService.Application.Core.SendCode
 {
-    public class SendCodeCommandHandler(IEmailSender emailSender, ICacheService cacheService) : IRequestHandler<SendCodeCommand, bool>
+    public class SendCodeCommandHandler(IEmailSender emailSender, ICacheService cacheService) : ICommandHandler<SendCodeCommand>
     {
-        public async Task<bool> Handle(SendCodeCommand request)
+        public async Task Handle(SendCodeCommand request, CancellationToken cancellationToken)
         {
             var codeObject = new EmailVerificationCode()
             {
@@ -25,8 +26,6 @@ namespace AuthService.Application.Core.SendCode
             };
 
             await emailSender.SendMessage(message);
-
-            return true;
         }
     }
 }
