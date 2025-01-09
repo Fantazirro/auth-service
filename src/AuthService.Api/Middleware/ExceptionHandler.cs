@@ -7,7 +7,7 @@ namespace AuthService.Api.Middleware
     public class ExceptionHandler : IExceptionHandler
     {
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
-        {
+        {         
             httpContext.Response.StatusCode = exception switch
             {
                 BadRequestException => StatusCodes.Status400BadRequest,
@@ -15,12 +15,14 @@ namespace AuthService.Api.Middleware
                 _ => StatusCodes.Status500InternalServerError
             };
 
+            var isInternalServerError = httpContext.Response.StatusCode == StatusCodes.Status500InternalServerError;
+
             var problemDetails = new ProblemDetails()
             {
                 Type = exception.GetType().Name,
                 Status = httpContext.Response.StatusCode,
                 Title = "An error occured",
-                Detail = exception.Message,
+                Detail = isInternalServerError ? "Internal Server Error" : exception.Message,
                 Instance = $"{httpContext.Request.Method} {httpContext.Request.Path}"
             };         
 

@@ -18,7 +18,7 @@ namespace AuthService.Persistence.Configurations
                 var auditInterceptor = serviceProvider.GetService<AuditInterceptor>()!;
 
                 options
-                    .UseNpgsql(configuration.GetConnectionString(""))
+                    .UseNpgsql(configuration.GetConnectionString("DatabaseConnection"))
                     .UseSnakeCaseNamingConvention()
                     .AddInterceptors(auditInterceptor);
             });

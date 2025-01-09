@@ -2,7 +2,7 @@
 using AuthService.Application.Abstractions.Messaging;
 using AuthService.Application.Abstractions.Notifications;
 using AuthService.Application.Models;
-using AuthService.Domain.Entities;
+using AuthService.Domain.Models;
 
 namespace AuthService.Application.Core.SendCode
 {

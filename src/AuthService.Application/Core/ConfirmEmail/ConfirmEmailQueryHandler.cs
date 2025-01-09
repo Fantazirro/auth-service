@@ -1,7 +1,7 @@
 ﻿using AuthService.Application.Abstractions.Common;
 using AuthService.Application.Abstractions.Messaging;
-using AuthService.Domain.Entities;
 using AuthService.Domain.Exceptions;
+using AuthService.Domain.Models;
 
 namespace AuthService.Application.Core.ConfirmEmail
 {

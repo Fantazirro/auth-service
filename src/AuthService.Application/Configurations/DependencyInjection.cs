@@ -1,4 +1,6 @@
-﻿using FluentValidation;
+﻿using AuthService.Application.Behaviors;
+using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -17,11 +19,7 @@ namespace AuthService.Application.Configurations
                 configuration.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             });
 
-            //var useCases = Assembly.GetExecutingAssembly().GetTypes()
-            //    .Where(type => type.GetInterface(typeof(IRequestHandlerOld<,>).Name) is not null);
-
-            //foreach (var useCase in useCases)
-            //    services.AddScoped(useCase);
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
             return services;
         }

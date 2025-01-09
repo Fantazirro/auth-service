@@ -1,4 +1,4 @@
-﻿namespace AuthService.Domain.Entities
+﻿namespace AuthService.Domain.Models
 {
     public class NotificationCode
     {

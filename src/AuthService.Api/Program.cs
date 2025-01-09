@@ -5,6 +5,7 @@ using AuthService.Application.Abstractions.Auth;
 using AuthService.Application.Configurations;
 using AuthService.Infrastructure.Configurations;
 using AuthService.Persistence.Configurations;
+using Microsoft.AspNetCore.HttpLogging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,13 +19,23 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddTransient<IUserIdentifierProvider, UserIdentifierProvider>();
 
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddExceptionHandler<ExceptionHandler>();
 builder.Services.AddProblemDetails();
+
+builder.Services.AddHttpLogging(options =>
+{
+    options.LoggingFields =
+        HttpLoggingFields.Duration |
+        HttpLoggingFields.RequestBody |
+        HttpLoggingFields.RequestProperties |
+        HttpLoggingFields.RequestQuery |
+        HttpLoggingFields.ResponseBody |
+        HttpLoggingFields.ResponseStatusCode;
+});
 
 var app = builder.Build();
 
@@ -33,6 +44,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseHttpLogging();
 
 app.UseExceptionHandler();
 app.MapControllers();
