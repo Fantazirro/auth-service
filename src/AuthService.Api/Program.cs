@@ -5,6 +5,7 @@ using AuthService.Application.Abstractions.Auth;
 using AuthService.Application.Configurations;
 using AuthService.Infrastructure.Configurations;
 using AuthService.Persistence.Configurations;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.HttpLogging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,6 +47,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpLogging();
+
+app.MapHealthChecks("health", new()
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 
 app.UseExceptionHandler();
 

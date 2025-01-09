@@ -38,6 +38,10 @@ namespace AuthService.Infrastructure.Configurations
 
             services.AddScoped<ICacheService, CacheService>();
 
+            services.AddHealthChecks()
+                .AddNpgSql(configuration.GetConnectionString("DatabaseConnection")!)
+                .AddRedis(configuration.GetConnectionString("RedisConnection")!);
+
             return services;
         }
     }
