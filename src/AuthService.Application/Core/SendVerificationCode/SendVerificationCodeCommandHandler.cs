@@ -6,11 +6,11 @@ using AuthService.Domain.Entities;
 
 namespace AuthService.Application.Core.SendCode
 {
-    public class SendCodeCommandHandler(IEmailSender emailSender, ICacheService cacheService) : ICommandHandler<SendCodeCommand>
+    public class SendVerificationCodeCommandHandler(IEmailSender emailSender, ICacheService cacheService) : ICommandHandler<SendVerificationCodeCommand>
     {
-        public async Task Handle(SendCodeCommand request, CancellationToken cancellationToken)
+        public async Task Handle(SendVerificationCodeCommand request, CancellationToken cancellationToken)
         {
-            var codeObject = new EmailVerificationCode()
+            var codeObject = new NotificationCode()
             {
                 Email = request.Email,
                 Code = new Random().Next(0, 10000)

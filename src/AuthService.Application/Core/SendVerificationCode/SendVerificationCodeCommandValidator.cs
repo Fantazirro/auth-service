@@ -2,9 +2,9 @@
 
 namespace AuthService.Application.Core.SendCode
 {
-    internal class SendCodeCommandValidator : AbstractValidator<SendCodeCommand>
+    internal class SendVerificationCodeCommandValidator : AbstractValidator<SendVerificationCodeCommand>
     {
-        public SendCodeCommandValidator()
+        public SendVerificationCodeCommandValidator()
         {
             RuleFor(c => c.Email).EmailAddress();
         }

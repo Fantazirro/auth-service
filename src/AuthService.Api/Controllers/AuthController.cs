@@ -5,6 +5,7 @@ using AuthService.Application.Core.ConfirmEmail;
 using AuthService.Application.Core.CreateRefreshToken;
 using AuthService.Application.Core.CreateUser;
 using AuthService.Application.Core.DeleteRefreshToken;
+using AuthService.Application.Core.ResetPassword;
 using AuthService.Application.Core.SendCode;
 using AuthService.Application.Core.SignIn;
 using AuthService.Application.Core.VerifyRefreshToken;
@@ -96,14 +97,16 @@ namespace AuthService.Api.Controllers
         }
 
         [HttpPost("send-code")]
+        [ValidationFilter<SendVerificationCodeCommand>]
         public async Task<IActionResult> SendCode(
-            [FromQuery] SendCodeCommand request)
+            [FromQuery] SendVerificationCodeCommand request)
         {
             await mediator.Send(request);
             return Ok();
         }
 
         [HttpPost("confirm-email")]
+        [ValidationFilter<ConfirmEmailQuery>]
         public async Task<IActionResult> ConfirmEmail(
             [FromQuery] ConfirmEmailQuery request)
         {
@@ -112,9 +115,12 @@ namespace AuthService.Api.Controllers
         }
 
         [HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword()
+        [ValidationFilter<ResetPasswordCommand>]
+        public async Task<IActionResult> ResetPassword(
+            [FromQuery] ResetPasswordCommand request)
         {
-            throw new NotImplementedException();
+            await mediator.Send(request);
+            return Ok();
         }
     }
 }
