@@ -48,6 +48,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpLogging();
 
 app.UseExceptionHandler();
+
 app.MapControllers();
 
 app.Run();

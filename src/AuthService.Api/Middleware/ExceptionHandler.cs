@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AuthService.Api.Middleware
 {
-    public class ExceptionHandler : IExceptionHandler
+    public class ExceptionHandler(ILogger<ExceptionHandler> logger) : IExceptionHandler
     {
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {         
@@ -16,6 +16,9 @@ namespace AuthService.Api.Middleware
             };
 
             var isInternalServerError = httpContext.Response.StatusCode == StatusCodes.Status500InternalServerError;
+
+            var logLevel = isInternalServerError ? LogLevel.Error : LogLevel.Information;
+            logger.Log(logLevel, $"An error occured: {exception.Message}");
 
             var problemDetails = new ProblemDetails()
             {
