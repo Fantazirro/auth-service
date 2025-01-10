@@ -14,10 +14,6 @@ namespace AuthService.Persistence
             Database.EnsureCreated();
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-        }
-
         public async Task BeginTransaction()
         {
             await BeginTransaction();

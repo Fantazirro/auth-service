@@ -1,7 +1,9 @@
 ﻿using AuthService.Api.Filters;
 using AuthService.Application.Abstractions.Auth;
 using AuthService.Application.Abstractions.Common;
+using AuthService.Application.Core.ChangePassword;
 using AuthService.Application.Core.ConfirmEmail;
+using AuthService.Application.Core.ConfirmReset;
 using AuthService.Application.Core.CreateRefreshToken;
 using AuthService.Application.Core.CreateUser;
 using AuthService.Application.Core.DeleteRefreshToken;
@@ -10,6 +12,7 @@ using AuthService.Application.Core.SendCode;
 using AuthService.Application.Core.SignIn;
 using AuthService.Application.Core.VerifyRefreshToken;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthService.Api.Controllers
@@ -18,6 +21,8 @@ namespace AuthService.Api.Controllers
     [ApiController]
     public class AuthController(IMediator mediator) : ControllerBase
     {
+        private const string RefreshTokenCookieKey = "refresh_token";
+
         [HttpPost("sign-up")]
         [ValidationFilter<CreateUserCommand>]
         public async Task<IActionResult> SignUp(
@@ -46,7 +51,7 @@ namespace AuthService.Api.Controllers
                     .GetValue<int>("ExpirationTimeInMonth"));
             var refreshToken = await mediator.Send(createRefreshTokenCommand);
 
-            httpContextAccessor.HttpContext?.Response.Cookies.Append("refresh_token", refreshToken.ToString(),
+            httpContextAccessor.HttpContext?.Response.Cookies.Append(RefreshTokenCookieKey, refreshToken.ToString(),
                 new CookieOptions()
                 {
                     HttpOnly = true
@@ -62,7 +67,7 @@ namespace AuthService.Api.Controllers
             [FromServices] IUserIdentifierProvider userIdentifierProvider,
             [FromServices] IConfiguration configuration)
         {
-            var hasRefreshToken = httpContextAccessor.HttpContext!.Request.Cookies.TryGetValue("refresh_token", out string? refreshTokenId);
+            var hasRefreshToken = httpContextAccessor.HttpContext!.Request.Cookies.TryGetValue(RefreshTokenCookieKey, out string? refreshTokenId);
             if (!hasRefreshToken) return BadRequest();
 
             var command = new DeleteRefreshTokenCommand(Guid.Parse(refreshTokenId!));
@@ -84,7 +89,7 @@ namespace AuthService.Api.Controllers
             [FromServices] IHttpContextAccessor httpContextAccessor,
             [FromServices] IJwtProvider jwtProvider)
         {
-            var hasRefreshToken = httpContextAccessor.HttpContext!.Request.Cookies.TryGetValue("refresh_token", out string? refreshTokenId);
+            var hasRefreshToken = httpContextAccessor.HttpContext!.Request.Cookies.TryGetValue(RefreshTokenCookieKey, out string? refreshTokenId);
             if (!hasRefreshToken) return BadRequest();
 
             var query = new GetRefreshTokenQuery(Guid.Parse(refreshTokenId!));
@@ -118,6 +123,25 @@ namespace AuthService.Api.Controllers
         [ValidationFilter<ResetPasswordCommand>]
         public async Task<IActionResult> ResetPassword(
             [FromQuery] ResetPasswordCommand request)
+        {
+            await mediator.Send(request);
+            return Ok();
+        }
+
+        [HttpPost("confirm-reset")]
+        [ValidationFilter<ConfirmResetCommand>]
+        public async Task<IActionResult> ConfirmReset(
+            [FromQuery] ConfirmResetCommand request)
+        {
+            await mediator.Send(request);
+            return Ok();
+        }
+
+        [HttpPost("change-password")]
+        [Authorize]
+        [ValidationFilter<ChangePasswordCommand>]
+        public async Task<IActionResult> ChangePassword(
+            [FromQuery] ChangePasswordCommand request)
         {
             await mediator.Send(request);
             return Ok();

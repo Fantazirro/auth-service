@@ -1,36 +1,28 @@
-﻿using AuthService.Application.Abstractions.Auth;
-using AuthService.Application.Abstractions.Data;
+﻿using AuthService.Application.Abstractions.Common;
 using AuthService.Application.Abstractions.Messaging;
 using AuthService.Application.Abstractions.Notifications;
+using AuthService.Application.Abstractions.Options;
 using AuthService.Application.Models;
-using AuthService.Domain.Exceptions;
 
 namespace AuthService.Application.Core.ResetPassword
 {
-    // TODO: сделать сброс пароля по ссылке
     public class ResetPasswordCommandHandler(
-        IUserRepository userRepository,
-        IUnitOfWork unitOfWork,
-        IPasswordHasher passwordHasher,
-        IEmailSender emailSender) : ICommandHandler<ResetPasswordCommand>
+        IEmailSender emailSender,
+        ICacheService cacheService,
+        IResetPasswordOptions options) : ICommandHandler<ResetPasswordCommand>
     {
         public async Task Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
         {
-            var newPassword = Guid.NewGuid().ToString();
+            var resetToken = Guid.NewGuid();
+            await cacheService.SetAsync($"reset_{request.Email}", resetToken, TimeSpan.FromHours(1));
 
-            var user = await userRepository.GetByEmail(request.Email);
-            if (user is null) throw new NotFoundException("User not found");
-
-            user.PasswordHash = passwordHasher.Hash(newPassword);
-
-            userRepository.Update(user);
-            await unitOfWork.Commit();
+            var url = $"{options.Url}?token={resetToken}";
 
             var message = new EmailMessage()
             {
                 ReceiverEmail = request.Email,
                 Subject = "Сброс пароля",
-                Body = $"Ваш новый пароль: {newPassword}"
+                Body = $"Перейдите по ссылке для сброса пароля: {url}"
             };
 
             await emailSender.SendMessage(message);

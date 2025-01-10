@@ -28,8 +28,11 @@ namespace AuthService.Infrastructure.Configurations
                    //configuration["SmtpOptions:Username"]!,
                    //configuration["SmtpOptions:Password"]!);
 
-            services.AddSingleton<IUserOptions>(serviceProvider => 
+            services.AddTransient<IUserOptions>(serviceProvider => 
                 serviceProvider.GetRequiredService<IOptions<UserOptions>>().Value);
+
+            services.AddTransient<IResetPasswordOptions>(serviceProvider =>
+                serviceProvider.GetRequiredService<IOptions<ResetPasswordOptions>>().Value);
 
             services.AddStackExchangeRedisCache(options => {
                 options.Configuration = configuration.GetConnectionString("RedisConnection");

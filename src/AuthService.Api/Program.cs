@@ -6,7 +6,7 @@ using AuthService.Application.Configurations;
 using AuthService.Infrastructure.Configurations;
 using AuthService.Persistence.Configurations;
 using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,19 +24,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
+
 builder.Services.AddExceptionHandler<ExceptionHandler>();
 builder.Services.AddProblemDetails();
 
-builder.Services.AddHttpLogging(options =>
-{
-    options.LoggingFields =
-        HttpLoggingFields.Duration |
-        HttpLoggingFields.RequestBody |
-        HttpLoggingFields.RequestProperties |
-        HttpLoggingFields.RequestQuery |
-        HttpLoggingFields.ResponseBody |
-        HttpLoggingFields.ResponseStatusCode;
-});
+builder.Services.ConfigureHttpLogging();
 
 var app = builder.Build();
 
@@ -54,6 +47,9 @@ app.MapHealthChecks("health", new()
 });
 
 app.UseExceptionHandler();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

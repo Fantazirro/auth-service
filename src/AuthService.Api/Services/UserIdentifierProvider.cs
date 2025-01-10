@@ -1,5 +1,6 @@
 ﻿using AuthService.Application.Abstractions.Auth;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace AuthService.Api.Services
 {
@@ -9,7 +10,7 @@ namespace AuthService.Api.Services
 
         public UserIdentifierProvider(IHttpContextAccessor httpContextAccessor)
         {
-            var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(JwtRegisteredClaimNames.Sub)
+            var userIdClaim = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)
                 ?? throw new ArgumentException("The user identifier claim is required.", nameof(httpContextAccessor));
 
             UserId = new Guid(userIdClaim.Value);

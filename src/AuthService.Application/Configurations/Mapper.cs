@@ -1,6 +1,5 @@
 ﻿#pragma warning disable RMG012, RMG020, RMG066
 
-using AuthService.Application.Abstractions.Common;
 using AuthService.Application.Core.CreateUser;
 using AuthService.Domain.Entities;
 using Riok.Mapperly.Abstractions;
