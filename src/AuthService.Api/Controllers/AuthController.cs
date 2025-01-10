@@ -62,6 +62,7 @@ namespace AuthService.Api.Controllers
         }
 
         [HttpPost("sign-out")]
+        [Authorize]
         public async Task<IActionResult> SignOut(
             [FromServices] IHttpContextAccessor httpContextAccessor,
             [FromServices] ICacheService cacheService,
