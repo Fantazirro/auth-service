@@ -3,6 +3,7 @@ using AuthService.Application.Abstractions.Common;
 using AuthService.Application.Abstractions.Data;
 using AuthService.Application.Abstractions.Messaging;
 using AuthService.Domain.Exceptions;
+using AuthService.Domain.Models;
 
 namespace AuthService.Application.Core.ConfirmReset
 {
@@ -14,16 +15,18 @@ namespace AuthService.Application.Core.ConfirmReset
     {
         public async Task Handle(ConfirmResetCommand request, CancellationToken cancellationToken)
         {
-            var getCachedToken = await cacheService.GetAsync<Guid>($"reset_{request.Email}");
-            if (request.Token != getCachedToken) throw new BadRequestException("Invalid token");
+            var isTokenValid = await cacheService.ContainsKey(CacheKeys.ResetPasswordToken(request.Token));
+            if (!isTokenValid) throw new BadRequestException("Invalid token");
 
-            var user = await userRepository.GetByEmail(request.Email);
-            if (user is null) throw new NotFoundException("User not found");
+            var email = await cacheService.GetAsync<string>(CacheKeys.ResetPasswordToken(request.Token));
 
-            user.PasswordHash = passwordHasher.Hash(request.NewPassword);
+            var user = await userRepository.GetByEmail(email);
+            user!.PasswordHash = passwordHasher.Hash(request.NewPassword);
 
             userRepository.Update(user);
             await unitOfWork.Commit();
+
+            await cacheService.RemoveAsync(CacheKeys.ResetPasswordToken(request.Token));
         }
     }
 }

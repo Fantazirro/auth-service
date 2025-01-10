@@ -7,8 +7,7 @@ namespace AuthService.Application.Core.ConfirmReset
     {
         public ConfirmResetCommandValidator(IUserOptions options)
         {
-            RuleFor(request => request.Email).EmailAddress();
-            RuleFor(request => request.NewPassword).Length(options.PasswordMinLength, options.PasswordMaxLength);
+            RuleFor(command => command.NewPassword).Length(options.PasswordMinLength, options.PasswordMaxLength);
         }
     }
 }

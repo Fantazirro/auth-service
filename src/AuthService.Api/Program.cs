@@ -31,6 +31,8 @@ builder.Services.AddProblemDetails();
 
 builder.Services.ConfigureHttpLogging();
 
+builder.Configuration.AddEnvironmentVariables();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

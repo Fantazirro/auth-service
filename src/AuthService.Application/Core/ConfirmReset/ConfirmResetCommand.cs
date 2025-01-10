@@ -2,5 +2,5 @@
 
 namespace AuthService.Application.Core.ConfirmReset
 {
-    public record ConfirmResetCommand(Guid Token, string Email, string NewPassword) : ICommand;
+    public record ConfirmResetCommand(Guid Token, string NewPassword) : ICommand;
 }

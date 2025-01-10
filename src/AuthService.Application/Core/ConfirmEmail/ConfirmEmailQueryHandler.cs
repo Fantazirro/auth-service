@@ -9,10 +9,14 @@ namespace AuthService.Application.Core.ConfirmEmail
     {
         public async Task Handle(ConfirmEmailQuery request, CancellationToken cancellationToken)
         {
-            var codeObject = await cacheService.GetAsync<NotificationCode>(request.Email);
-            if (codeObject is null) throw new NotFoundException("Verification code not found");
+            var isKeyExists = await cacheService.ContainsKey(CacheKeys.EmailVerificationCode(request.Email));
+            if (!isKeyExists) throw new NotFoundException("Verification code not found");
+
+            var codeObject = await cacheService.GetAsync<NotificationCode>(CacheKeys.EmailVerificationCode(request.Email));
 
             if (request.Code != codeObject.Code) throw new BadRequestException("Incorrect verification code");
+
+            await cacheService.RemoveAsync(CacheKeys.EmailVerificationCode(request.Email));
         }
     }
 }

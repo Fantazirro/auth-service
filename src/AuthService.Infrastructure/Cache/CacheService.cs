@@ -31,5 +31,10 @@ namespace AuthService.Infrastructure.Cache
                 AbsoluteExpirationRelativeToNow = lifeTime
             });
         }
+
+        public async Task<bool> ContainsKey(string key)
+        {
+            return (await cache.GetAsync(key)) is not null;
+        }
     }
 }

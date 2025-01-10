@@ -11,6 +11,7 @@ using AuthService.Application.Core.ResetPassword;
 using AuthService.Application.Core.SendCode;
 using AuthService.Application.Core.SignIn;
 using AuthService.Application.Core.VerifyRefreshToken;
+using AuthService.Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -77,7 +78,7 @@ namespace AuthService.Api.Controllers
             var lifeTimeInMinutes = configuration.GetSection("JwtOptions").GetValue<int>("DurationInMinutes");
 
             await cacheService.SetAsync(
-                $"accessBlacklist_{userIdentifierProvider.UserId}_{Guid.NewGuid()}",
+                CacheKeys.AccessTokenBlacklist(accessToken.GetHashCode().ToString()),
                 accessToken,
                 TimeSpan.FromMinutes(lifeTimeInMinutes));
 

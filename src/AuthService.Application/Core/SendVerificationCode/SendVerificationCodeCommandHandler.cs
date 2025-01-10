@@ -16,7 +16,7 @@ namespace AuthService.Application.Core.SendCode
                 Code = new Random().Next(0, 10000)
             };
 
-            await cacheService.SetAsync(request.Email, codeObject, TimeSpan.FromDays(1));
+            await cacheService.SetAsync(CacheKeys.EmailVerificationCode(request.Email), codeObject, TimeSpan.FromDays(1));
 
             var message = new EmailMessage()
             {
