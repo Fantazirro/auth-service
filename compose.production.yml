@@ -1,0 +1,11 @@
+services:
+  auth-service:
+    environment:
+      ConnectionStrings:DatabaseConnection: Server=postgres-db;Port=5432;Database=auth-service;User Id=postgres;Password=postgres
+      ConnectionStrings:RedisConnection: redis-cache
+  
+  postgres-db:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: auth-service
