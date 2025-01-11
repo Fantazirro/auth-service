@@ -19,6 +19,10 @@ docker compose -f compose.yml -f compose.development.yml up -d
 docker compose -f compose.yml -f compose.production.yml up -d
 ```
 
+## Доступные эндпоинты
+Список доступных эндпоинтов можно узнать с помощью инструмента Swagger  
+Также список эндпоинтов доступен на [странице Wiki](https://github.com/Fantazirro/auth-service/wiki#%D0%B4%D0%BE%D1%81%D1%82%D1%83%D0%BF%D0%BD%D1%8B%D0%B5-%D1%8D%D0%BD%D0%B4%D0%BF%D0%BE%D0%B8%D0%BD%D1%82%D1%8B-%D0%B8-%D0%B8%D1%85-%D0%BF%D0%B0%D1%80%D0%B0%D0%BC%D0%B5%D1%82%D1%80%D1%8B)
+
 ## Стек технологий
 * **Web API**: ASP.NET Core
 * **База данных**: PostgreSQL
