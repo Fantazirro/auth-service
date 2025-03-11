@@ -2,5 +2,5 @@
 
 namespace AuthService.Application.Core.ConfirmEmail
 {
-    public record ConfirmEmailQuery(string Email, int Code) : IQuery;
+    public record ConfirmEmailCommand(string Email, int Code) : ICommand;
 }

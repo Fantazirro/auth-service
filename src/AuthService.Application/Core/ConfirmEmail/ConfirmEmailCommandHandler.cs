@@ -5,9 +5,9 @@ using AuthService.Domain.Models;
 
 namespace AuthService.Application.Core.ConfirmEmail
 {
-    public class ConfirmEmailQueryHandler(ICacheService cacheService) : IQueryHandler<ConfirmEmailQuery>
+    public class ConfirmEmailCommandHandler(ICacheService cacheService) : ICommandHandler<ConfirmEmailCommand>
     {
-        public async Task Handle(ConfirmEmailQuery request, CancellationToken cancellationToken)
+        public async Task Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
         {
             var isKeyExists = await cacheService.ContainsKey(CacheKeys.EmailVerificationCode(request.Email));
             if (!isKeyExists) throw new NotFoundException("Verification code not found");

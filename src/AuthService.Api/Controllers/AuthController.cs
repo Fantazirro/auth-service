@@ -27,7 +27,7 @@ namespace AuthService.Api.Controllers
         [HttpPost("sign-up")]
         [ValidationFilter<CreateUserCommand>]
         public async Task<IActionResult> SignUp(
-            [FromQuery] CreateUserCommand request)
+            [FromBody] CreateUserCommand request)
         {
             await mediator.Send(request);
             return Ok();
@@ -36,7 +36,7 @@ namespace AuthService.Api.Controllers
         [HttpPost("sign-in")]
         [ValidationFilter<SignInQuery>]
         public async Task<IActionResult> SignIn(
-            [FromQuery] SignInQuery request,
+            [FromBody] SignInQuery request,
             [FromServices] IJwtProvider jwtProvider,
             [FromServices] IHttpContextAccessor httpContextAccessor,
             [FromServices] IConfiguration configuration)
@@ -106,16 +106,16 @@ namespace AuthService.Api.Controllers
         [HttpPost("send-code")]
         [ValidationFilter<SendVerificationCodeCommand>]
         public async Task<IActionResult> SendCode(
-            [FromQuery] SendVerificationCodeCommand request)
+            [FromBody] SendVerificationCodeCommand request)
         {
             await mediator.Send(request);
             return Ok();
         }
 
         [HttpPost("confirm-email")]
-        [ValidationFilter<ConfirmEmailQuery>]
+        [ValidationFilter<ConfirmEmailCommand>]
         public async Task<IActionResult> ConfirmEmail(
-            [FromQuery] ConfirmEmailQuery request)
+            [FromBody] ConfirmEmailCommand request)
         {
             await mediator.Send(request);
             return Ok();
@@ -124,7 +124,7 @@ namespace AuthService.Api.Controllers
         [HttpPost("reset-password")]
         [ValidationFilter<ResetPasswordCommand>]
         public async Task<IActionResult> ResetPassword(
-            [FromQuery] ResetPasswordCommand request)
+            [FromBody] ResetPasswordCommand request)
         {
             await mediator.Send(request);
             return Ok();
@@ -133,7 +133,7 @@ namespace AuthService.Api.Controllers
         [HttpPost("confirm-reset")]
         [ValidationFilter<ConfirmResetCommand>]
         public async Task<IActionResult> ConfirmReset(
-            [FromQuery] ConfirmResetCommand request)
+            [FromBody] ConfirmResetCommand request)
         {
             await mediator.Send(request);
             return Ok();
@@ -143,7 +143,7 @@ namespace AuthService.Api.Controllers
         [Authorize]
         [ValidationFilter<ChangePasswordCommand>]
         public async Task<IActionResult> ChangePassword(
-            [FromQuery] ChangePasswordCommand request)
+            [FromBody] ChangePasswordCommand request)
         {
             await mediator.Send(request);
             return Ok();

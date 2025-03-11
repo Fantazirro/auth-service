@@ -20,13 +20,26 @@ namespace AuthService.Infrastructure.Configurations
             services.AddTransient<IJwtProvider, JwtProvider>();
             services.AddTransient<IEmailSender, EmailSender>();
 
-            services
+            bool isSmtpAuth = configuration["SmtpOptions:Username"] is not null;
+
+            if (isSmtpAuth)
+            {
+                services
+               .AddFluentEmail(configuration["SmtpOptions:SenderEmail"]!, configuration["SmtpOptions:Sender"]!)
+               .AddSmtpSender(
+                   configuration["SmtpOptions:Host"]!,
+                   int.Parse(configuration["SmtpOptions:Port"]!),
+                   configuration["SmtpOptions:Username"]!,
+                   configuration["SmtpOptions:Password"]!);
+            }
+            else
+            {
+                services
                .AddFluentEmail(configuration["SmtpOptions:SenderEmail"]!, configuration["SmtpOptions:Sender"]!)
                .AddSmtpSender(
                    configuration["SmtpOptions:Host"]!,
                    int.Parse(configuration["SmtpOptions:Port"]!));
-                   //configuration["SmtpOptions:Username"]!,
-                   //configuration["SmtpOptions:Password"]!);
+            }
 
             services.AddTransient<IUserOptions>(serviceProvider => 
                 serviceProvider.GetRequiredService<IOptions<UserOptions>>().Value);

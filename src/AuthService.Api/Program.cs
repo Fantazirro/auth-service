@@ -1,4 +1,5 @@
 using AuthService.Api.Extensions;
+using AuthService.Api.Initializations;
 using AuthService.Api.Middleware;
 using AuthService.Api.Services;
 using AuthService.Application.Abstractions.Auth;
@@ -43,7 +44,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpLogging();
 
-app.MapHealthChecks("health", new()
+app.MapHealthChecks("auth/health", new()
 {
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
@@ -54,5 +55,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+DatabaseMigrator.ApplyMigration(app.Services);
 
 app.Run();
